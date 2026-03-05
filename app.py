@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
+limiter = Limiter(app=app, key_func=get_remote_address)
 
 # Our list of books
 books = [
@@ -16,6 +19,7 @@ def validate_book_data(data):
 
 
 @app.route('/api/books', methods=['GET', 'POST'])
+@limiter.limit("10/minute") # Limit to 10 requests per minute
 def handle_books():
     if request.method == 'POST':
         # Get the new book data from the client
