@@ -36,12 +36,17 @@ def handle_books():
     else:
         # Handle the GET request
         author = request.args.get('author')
-
         if author:
             filtered_books = [book for book in books if book.get('author') == author]
             return jsonify(filtered_books)
-        else:
-            return jsonify(books)
+
+        page = int(request.args.get('page', 1))
+        limit = int(request.args.get('limit', 10))
+
+        start_index = (page - 1) * limit
+        end_index = start_index + limit
+        paginated_books = books[start_index:end_index]
+        return jsonify(paginated_books)
 
 
 def find_book_by_id(book_id):
